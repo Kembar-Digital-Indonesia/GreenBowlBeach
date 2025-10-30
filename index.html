@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>3DScan.id</title>
+  <title>Green Bowl</title>
+  <link rel="icon" type="image/png" href="https://designedbypelago.com/wp-content/uploads/2025/09/logo-removebg-preview-e1758598536557.png">
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -12,239 +13,219 @@
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<style>
-    body {
-        font-family: 'Work Sans', sans-serif;
-    }
-    #thumbnailScroll::-webkit-scrollbar {
-        display: none;
-    }
-    #thumbnailScroll {
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
-    }
-</style>
+    <style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+        }
+    
+        #thumbnailScroll::-webkit-scrollbar {
+            display: none;
+        }
+        #thumbnailScroll {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+    </style>
 <body>
-  <canvas id="webgl-canvas" class="absolute block top-0 lef-0 z-0"></canvas>
+    <canvas id="webgl-canvas" class="absolute block top-0 lef-0 z-0"></canvas>
 
-  <!-- <div class="absolute top-[5px] left-[10px] w-[200px]"> -->
-  <div class="absolute top-[5px] left-2 w-[200px]">
-      <img src="./photos/logo.png" alt="">
-  </div>
-
-  <div class="absolute flex gap-2 bottom-2 left-[50%] -translate-x-[50%] rounded-xl whitespace-nowrap">
-      <button class="area-button bg-[#FCCC01] flex gap-1 hover:bg-black text-black hover:text-[#FCCC01] px-3 py-1 font-semibold rounded-lg data-[active=true]:bg-black data-[active=true]:text-[#FCCC01]">
-        <h1 class="bg-white rounded-full px-2">1</h1>
-        Main House
-      </button>
-      <button class="area-button bg-[#FCCC01] flex gap-1 hover:bg-black text-black hover:text-[#FCCC01] px-3 py-1 font-semibold rounded-lg data-[active=true]:bg-black data-[active=true]:text-[#FCCC01]">
-        <h1 class="bg-white rounded-full px-2">2</h1>
-        Pool Area
-      </button>
-      <button class="area-button bg-[#FCCC01] flex gap-1 hover:bg-black text-black hover:text-[#FCCC01] px-3 py-1 font-semibold rounded-lg data-[active=true]:bg-black data-[active=true]:text-[#FCCC01]">
-        <h1 class="bg-white rounded-full px-2">3</h1>
-        Entrance
-      </button>
-      <button class="area-button bg-[#FCCC01] flex gap-1 hover:bg-black text-black hover:text-[#FCCC01] px-3 py-1 font-semibold rounded-lg data-[active=true]:bg-black data-[active=true]:text-[#FCCC01]">
-        <h1 class="bg-white rounded-full px-2">4</h1>
-        Backyard
-      </button>
-  </div>
-
-<!-- <button id="openVideo" class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-[#757741] text-[#f5f4ea] rounded-lg font-semibold p-3 z-50">
-  Watch Video
-</button> -->
-
-    <!-- Kontainer deskripsi -->
-  <div id="pooldescription" class="description-box absolute top-2 right-2 bg-[#FCCC01] rounded-lg shadow-lg w-96 z-20" style="display: none;">
-    <button class="absolute top-2 right-2 text-black close-description bg-[#FCCC01] rounded-full p-1">
-      <i data-lucide="x"></i>
-    </button>
-    <img src="./photos/home.png" alt="" class="rounded-lg w-full h-[200px] object-cover mb-2">
-    <h4 class="text-lg font-bold text-black mx-4">Main House</h4>
-    <p class="text-sm mb-3 text-black mx-4">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui, dolores libero. Vel similique libero sit, sapiente assumenda atque voluptas sequi qui magni ea aut excepturi corporis earum, harum autem a itaque. Vero mollitia ea eius unde eum, non pariatur velit, molestias laborum quis dolorum similique, harum cumque reprehenderit quidem quia.</p>
-    <div class="flex gap-2 mb-4 mx-4">
-    <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-black hover:bg-gray-900 text-[#FCCC01] w-full p-2 rounded-xl" data-gallery-id="pool"
-      data-images='["./photos/home.png"]'>
-      <i data-lucide="image" class="size-5 my-auto "></i>
-      <span class="font-semibold">Gallery</span>
-    </button>
-    <a href="https://my.3dscan.id/tour/villabumbak?play=1&sr=-.42,.45&ss=25" class="w-full">
-      <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-black hover:bg-gray-900 text-[#FCCC01] w-full p-2 rounded-xl">
-        <i data-lucide="rotate-3d" class="size-5 my-auto "></i>
-        <span class="font-semibold">360 View</span>
-      </button>
-    </a>
-    </div>
-  </div>
-
-  <div id="housedescription" class="description-box absolute top-2 right-2 bg-[#FCCC01] rounded-lg shadow-lg w-96 z-20" style="display: none;">
-    <button class="absolute top-2 right-2 text-black close-description bg-[#FCCC01] rounded-full p-1">
-      <i data-lucide="x"></i>
-    </button>
-    <img src="./photos/pool.png" alt="" class="rounded-lg w-full h-[200px] object-cover mb-2">
-    <h4 class="text-lg font-bold text-black mx-4">Pool Area</h4>
-    <p class="text-sm mb-3 text-black mx-4">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui, dolores libero. Vel similique libero sit, sapiente assumenda atque voluptas sequi qui magni ea aut excepturi corporis earum, harum autem a itaque. Vero mollitia ea eius unde eum, non pariatur velit, molestias laborum quis dolorum similique, harum cumque reprehenderit quidem quia.</p>
-      <div class="flex gap-2 mb-4 mx-4">
-      <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-black hover:bg-gray-900 text-[#FCCC01] w-full p-2 rounded-xl" data-gallery-id="house"
-      data-images='["./photos/pool.png"]'>
-        <i data-lucide="image" class="size-5 my-auto "></i>
-        <span class="font-semibold">Gallery</span>
-      </button>
-      <a href="https://my.3dscan.id/tour/villabumbak?play=1&sr=-.44,.2&ss=57" class="w-full">
-          <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-black hover:bg-gray-900 text-[#FCCC01] w-full p-2 rounded-xl">
-          <i data-lucide="rotate-3d" class="size-5 my-auto "></i>
-          <span class="font-semibold">360 View</span>
-          </button>
-      </a>
-      </div>
-  </div>
-
-  <div id="gardendescription" class="description-box absolute top-2 right-2 bg-[#FCCC01] rounded-lg shadow-lg w-96 z-20" style="display: none;">
-    <button class="absolute top-2 right-2 text-black close-description bg-[#FCCC01] rounded-full p-1">
-      <i data-lucide="x"></i>
-    </button>
-    <img src="./photos/entrance.png" alt="" class="rounded-lg w-full h-[200px] object-cover mb-2">
-    <h4 class="text-lg font-bold text-black mx-4">Entrance</h4>
-    <p class="text-sm mb-3 text-black mx-4">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui, dolores libero. Vel similique libero sit, sapiente assumenda atque voluptas sequi qui magni ea aut excepturi corporis earum, harum autem a itaque. Vero mollitia ea eius unde eum, non pariatur velit, molestias laborum quis dolorum similique, harum cumque reprehenderit quidem quia.</p>
-      <div class="flex gap-2 mb-4 mx-4">
-      <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-black hover:bg-gray-900 text-[#FCCC01] w-full p-2 rounded-xl" data-gallery-id="poolgarden"
-      data-images='["./photos/entrance.png"]'>
-        <i data-lucide="image" class="size-5 my-auto "></i>
-        <span class="font-semibold">Gallery</span>
-      </button>
-      <a href="https://my.3dscan.id/tour/villabumbak?play=1&sr=-1.18,-1.19&ss=75" class="w-full">
-          <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-black hover:bg-gray-900 text-[#FCCC01] w-full p-2 rounded-xl">
-          <i data-lucide="rotate-3d" class="size-5 my-auto "></i>
-          <span class="font-semibold">360 View</span>
-          </button>
-      </a>
-      </div>
-  </div>
-
-  <div id="arrivaldescription" class="description-box absolute top-2 right-2 bg-[#FCCC01] rounded-lg shadow-lg w-96 z-20" style="display: none;">
-    <button class="absolute top-2 right-2 text-black close-description bg-[#FCCC01] rounded-full p-1">
-      <i data-lucide="x"></i>
-    </button>
-    <img src="./photos/backyard.png" alt="" class="rounded-lg w-full h-[200px] object-cover mb-2">
-    <h4 class="text-lg font-bold text-black mx-4">Backyard</h4>
-    <p class="text-sm mb-3 text-black mx-4">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui, dolores libero. Vel similique libero sit, sapiente assumenda atque voluptas sequi qui magni ea aut excepturi corporis earum, harum autem a itaque. Vero mollitia ea eius unde eum, non pariatur velit, molestias laborum quis dolorum similique, harum cumque reprehenderit quidem quia.</p>
-      <div class="flex gap-2 mb-4 mx-4">
-      <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-black hover:bg-gray-900 text-[#FCCC01] w-full p-2 rounded-xl" data-gallery-id="arrival"
-      data-images='["./photos/backyard.png"]'>
-        <i data-lucide="image" class="size-5 my-auto "></i>
-        <span class="font-semibold">Gallery</span>
-      </button>
-      <a href="https://my.3dscan.id/tour/villabumbak?play=1&sr=-.77,1.19&ss=12" class="w-full">
-          <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-black hover:bg-gray-900 text-[#FCCC01] w-full p-2 rounded-xl">
-          <i data-lucide="rotate-3d" class="size-5 my-auto "></i>
-          <span class="font-semibold">360 View</span>
-          </button>
-      </a>
-      </div>
-  </div>
-
-<!-- <div id="archdescription" class="description-box absolute top-20 left-2 bg-[#757741] rounded-lg p-4 shadow-lg w-96 z-20" style="display: none;">
-  <button class="absolute top-2 right-2 text-[#f5f4ea] close-description">
-    <i data-lucide="x"></i>
-  </button>
-  <img src="./photos/mainhouse2.png" alt="" class="rounded-lg w-full h-[200px] object-cover my-4">
-  <h4 class="text-lg font-bold text-[#f5f4ea]">Arch Walk</h4>
-  <p class="text-sm mb-3 text-[#f5f4ea]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui, dolores libero. Vel similique libero sit, sapiente assumenda atque voluptas sequi qui magni ea aut excepturi corporis earum, harum autem a itaque. Vero mollitia ea eius unde eum, non pariatur velit, molestias laborum quis dolorum similique, harum cumque reprehenderit quidem quia.</p>
-    <div class="flex gap-2">
-    <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-[#d3d2a5] hover:bg-[#f5f4ea] text-[#757741] w-full p-2 rounded-xl" data-gallery-id="arrival"
-     data-images='["./photos/mainhouse2.png"]'>
-      <i data-lucide="image" class="size-5 my-auto "></i>
-      <span class="font-semibold">Gallery</span>
-    </button>
-    <a href="/Demo02/area5/360/" class="w-full">
-        <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-[#d3d2a5] hover:bg-[#f5f4ea] text-[#757741] w-full p-2 rounded-xl">
-        <i data-lucide="rotate-3d" class="size-5 my-auto "></i>
-        <span class="font-semibold">360 View</span>
-        </button>
-    </a>
-    </div>
+<div class="absolute top-2 left-2 w-[150px] backdrop-blur-sm rounded-lg bg-[#0F1049]/70 backdrop-blur-md p-2">
+    <img  src="https://designedbypelago.com/wp-content/uploads/2025/09/logo-removebg-preview-e1758598536557.png" alt="">
 </div>
 
-<div id="backdescription" class="description-box absolute top-20 left-2 bg-[#757741] rounded-lg p-4 shadow-lg w-96 z-20" style="display: none;">
-  <button class="absolute top-2 right-2 text-[#f5f4ea] close-description">
-    <i data-lucide="x"></i>
+<div class="absolute flex left-1/2 -translate-x-1/2 gap-5 top-2 bg-[#0F1049]/70 backdrop-blur-md py-2 px-4 text-white font-semibold rounded-xl">
+  <button id="btn-open-map" class="hover:text-gray-300">
+    Location
   </button>
-  <img src="./photos/back.png" alt="" class="rounded-lg w-full h-[200px] object-cover my-4">
-  <h4 class="text-lg font-bold text-[#f5f4ea]">Back of House</h4>
-  <p class="text-sm mb-3 text-[#f5f4ea]">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Qui, dolores libero. Vel similique libero sit, sapiente assumenda atque voluptas sequi qui magni ea aut excepturi corporis earum, harum autem a itaque. Vero mollitia ea eius unde eum, non pariatur velit, molestias laborum quis dolorum similique, harum cumque reprehenderit quidem quia.</p>
-    <div class="flex gap-2">
-    <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-[#d3d2a5] hover:bg-[#f5f4ea] text-[#757741] w-full p-2 rounded-xl" data-gallery-id="arrival"
-     data-images='["./photos/back.png", "./photos/back2.png"]'>
-      <i data-lucide="image" class="size-5 my-auto "></i>
-      <span class="font-semibold">Gallery</span>
-    </button>
-    <a href="/Demo02/area6/360/" class="w-full">
-        <button class="galleryBtn flex gap-2 text-center justify-center font-medium items-center bg-[#d3d2a5] hover:bg-[#f5f4ea] text-[#757741] w-full p-2 rounded-xl">
-        <i data-lucide="rotate-3d" class="size-5 my-auto "></i>
-        <span class="font-semibold">360 View</span>
-        </button>
+  <div class="hover:text-gray-300">
+  <button class="galleryBtn" data-media='[{"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/DJI_0011_low-res_2.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/DJI_0007_low-res_2.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0015.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0025.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0028.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0039.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0050.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0054.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0063.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0080.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0086.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0124.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0154-HDR.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0179-HDR.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0189-HDR.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0204.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DSC00406.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DSC00408.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DSC00429-HDR.jpg"},
+     {"type":"image","src":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0002.jpg"}]'>
+    Gallery
+  </button>
+  </div>
+  <div class="hover:text-gray-300">
+    <button class="galleryBtn"
+     data-media='[{"type":"video","src":"https://videos.files.wordpress.com/JwGFKI8g/dji_0220-hd-1080p.mov","poster":"https://designedbypelago.com/wp-content/uploads/2025/09/compressed_DJI_0025.jpg"}]'>
+    Video
+  </button>
+  </div>
+  <a href="https://drive.google.com/drive/folders/1rWKrGj1w4cyNFu2b67td_Tw4sNQiTrjJ?usp=sharing" class="hover:text-gray-300" target="_blank" 
+   rel="noopener noreferrer">
+    Documents
+  </a>
+  <div class="relative">
+  <button id="btn-contact"
+          class="hover:text-gray-300 inline-flex items-center gap-1"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="contact-menu">
+    Contact
+    <svg class="size-4 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.25a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08z"/>
+    </svg>
+  </button>  
+</div>
+
+  <!-- Dropdown -->
+  <div id="contact-menu"
+       role="menu"
+       aria-labelledby="btn-contact"
+       class="absolute right-0 mt-8 w-full z-20
+              rounded-xl bg-[#0F1049]/80 text-sm text-white
+              shadow-lg !backdrop-blur-md p-2
+              invisible opacity-0 translate-y-1 pointer-events-none
+              transition-all duration-150 grid grid-cols-2 gap-2">
+    <div role="menuitem"
+        class="block px-3 py-2 rounded-lg focus:bg-white/10 focus:outline-none border flex">
+        <h1 class="m-auto">PT Bukit Consulting</h1> 
+</div>
+    <a href="mailto:hello@mahkotaconsultancy.com" role="menuitem"
+       class="block px-3 py-2 rounded-lg hover:bg-white/10 focus:bg-white/10 focus:outline-none border flex items-center gap-2">
+       <i data-lucide="mail"></i>
+       <div>
+      <h1>hello@mahkota</h1>
+      <h1>consultancy.com</h1>
+      </div>
     </a>
-    </div>
-</div> -->
+    <a href="https://wa.me/+85294887657" role="menuitem" target="_blank" rel="noopener"
+       class="block px-3 py-2 rounded-lg hover:bg-white/10 focus:bg-white/10 focus:outline-none border flex items-center gap-2">
+       <i data-lucide="message-circle-code"></i>
+       <div>
+        <h1>Kelvin Wong</h1> 
+        <h1>+852-9488-7657</h1>
+       </div>
+    </a>
+    <a href="tel:+85294887657" role="menuitem"
+       class="block px-3 py-2 rounded-lg hover:bg-white/10 focus:bg-white/10 focus:outline-none border flex items-center gap-2">
+       <i data-lucide="phone"></i>
+       <div>
+        <h1>Kelvin Wong</h1> 
+        <h1>+852-9488-7657</h1>
+       </div>
+    </a>
+  </div>
+</div>
+
+<button id="btn-toggle-line" class="absolute right-2 top-2 bg-[#0F1049]/70 backdrop-blur-md p-2 rounded-xl text-white">
+  <i data-lucide="eye"></i>
+  <i data-lucide="eye-off"></i>
+</button>
+
+<div id="info-box" class="absolute right-2 bottom-2 bg-[#0F1049]/70 backdrop-blur-md p-4 rounded-xl font-medium text-white">
+  <h1 class="font-semibold mb-2 text-center border rounded-xl">Information</h1>
+  <div class="grid grid-cols-2 gap-2">
+  <h1>Landsize:</h1>
+  <h1 class="font-normal">24.720 Sqm / 247.2 Are</h1>
+  <h1>Zoning:</h1>
+  <h1 class="font-normal">Pink Zone</h1>
+  <h1>Title:</h1>
+  <h1 class="font-normal">Free hold</h1>
+  <h1>Price per are:</h1>
+  <h1 class="font-normal">Rp 1.4 Billion</h1>
+  <h1>Total price:</h1>
+  <h1 class="font-normal">Rp 346.08 Billion</h1>
+  </div>
+</div>
+
+<!-- Overlay peta (FULLSCREEN) -->
+<div id="map-overlay" style="position:fixed; inset:0; z-index:50; display:none; background:#000;">
+  <div id="gmap" style="width:100%; height:100%;"></div>
+
+  <button id="btn-close-map"
+    class="bg-black/40 backdrop-blur-md text-white font-semibold
+           absolute right-2 top-2 z-10 p-3 rounded-[8px] cursor-pointer">
+    Close Map
+  </button>
+</div>
 
  <!-- Carousel Section -->
-  <div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden" id="carouselWrapper">
-    <div class="relative w-auto max-w-[90%]" id="carouselWrap">
-      <!-- Carousel -->
-      <div class=" flex items-center justify-center" id="carouselContainer">
-        <button id="prevBtn" class="relative left-2 bg-[#f5f4ea] hover:bg-[#FCCC01] hover:text-black rounded-full p-2 z-10">
+    <div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden" id="carouselWrapper">
+      <div class="relative w-auto max-w-[50%]" id="carouselWrap">
+        <!-- Carousel -->
+        <div class="relative flex items-center justify-center" id="carouselContainer">
+          <button id="prevBtn" class="relative left-2 bg-[#f5f4ea] hover:bg-[#0F1049] hover:text-[#f5f4ea] rounded-full p-2 z-10">
+            <i data-lucide="chevron-left"></i>
+          </button>
+
+          <img id="carouselImage" class="w-[800px] h-[600px] object-contain rounded-lg cursor-pointer" alt="Slide" />
+          <video preload="none" id="carouselVideo"
+          class="w-[800px] h-[600px] object-contain rounded-lg cursor-pointer hidden"
+          controls
+          playsinline
+          preload="metadata"></video>
+
+          <button id="nextBtn" class="relative right-2 bg-[#f5f4ea] hover:bg-[#0F1049] hover:text-[#f5f4ea] rounded-full p-2 z-10">
+            <i data-lucide="chevron-right"></i>
+          </button>
+        </div>
+        <div class="relative flex w-fit max-w-[90%] mx-auto mt-4 overflow-hidden">
+        <!-- Left Arrow -->
+        <button id="thumbLeft"
+          class="absolute left-0 top-1/2 -translate-y-1/2 bg-[#f5f4ea] hover:bg-[#0F1049] hover:text-[#f5f4ea] rounded-full p-1 shadow z-10">
           <i data-lucide="chevron-left"></i>
         </button>
-
-        <img id="carouselImage" class="w-[800px] h-[600px] object-contain rounded-lg cursor-pointer" alt="Slide" />
-
-        <button id="nextBtn" class="relative right-2 bg-[#f5f4ea] hover:bg-[#FCCC01] hover:text-black rounded-full p-2 z-10">
+          <div id="thumbnailScroll" class="flex gap-2 overflow-x-auto scroll-smooth px-6 scrollbar-hide hidden">
+ 
+          </div>
+        <button id="thumbRight"
+          class="absolute right-0 top-1/2 -translate-y-1/2 bg-[#f5f4ea] hover:bg-[#0F1049] hover:text-[#f5f4ea] rounded-full p-1 shadow z-10">
           <i data-lucide="chevron-right"></i>
         </button>
-      </div>
-      <div class="relative flex w-fit max-w-[90%] mx-auto mt-4 overflow-hidden">
-      <!-- Left Arrow -->
-      <button id="thumbLeft"
-        class="absolute left-0 top-1/2 -translate-y-1/2 bg-[#f5f4ea] hover:bg-[#FCCC01] hover:text-black rounded-full p-1 shadow z-10">
-        <i data-lucide="chevron-left"></i>
-      </button>
-        <div id="thumbnailScroll" class="flex gap-2 overflow-x-auto scroll-smooth px-6 scrollbar-hide hidden">
-          <!-- <img src="./photos/ENTRANCE.jpg" class="thumbnail w-30 h-24 object-cover cursor-pointer border-2 border-transparent rounded" data-index="0" />
-          <img src="./photos/BED.jpg" class="thumbnail w-30 h-24 object-cover cursor-pointer border-2 border-transparent rounded" data-index="1" />
-          <img src="./photos/STUDYROOM.jpg" class="thumbnail w-30 h-24 object-cover cursor-pointer border-2 border-transparent rounded" data-index="2" />
-          <img src="./photos/ENSUITE.jpg" class="thumbnail w-30 h-24 object-cover cursor-pointer border-2 border-transparent rounded" data-index="3" />
-          <img src="./photos/KITCHEN.jpg" class="thumbnail w-30 h-24 object-cover cursor-pointer border-2 border-transparent rounded" data-index="4" />
-          <img src="./photos/LOUNGE.jpg" class="thumbnail w-30 h-24 object-cover cursor-pointer border-2 border-transparent rounded" data-index="5" />
-          <img src="./photos/PATIO_BACKYARD.jpg" class="thumbnail w-30 h-24 object-cover cursor-pointer border-2 border-transparent rounded" data-index="6" /> -->
         </div>
-      <button id="thumbRight"
-        class="absolute right-0 top-1/2 -translate-y-1/2 bg-[#f5f4ea] hover:bg-[#FCCC01] hover:text-black rounded-full p-1 shadow z-10">
-        <i data-lucide="chevron-right"></i>
-      </button>
       </div>
-      <!-- <div class="w-[600px] text-center text-white mx-auto">
-          <h1>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem animi sed labore rerum, provident amet nulla aspernatur itaque quod vero.</h1>
-      </div> -->
     </div>
-  </div>
 
-  <div id="videoModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-40 hidden">
-    <div class="relative w-[90%] max-w-3xl">
-      <button id="closeVideo" class="absolute top-2 right-2 text-white text-2xl font-bold z-10">&times;</button>
-      <video id="videoPlayer" controls autoplay class="w-full h-[60vh] rounded-lg">
-        <source src="./photos/video.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-    </div>
-  </div>
-
-  <!-- <div id="cam-info" class="absolute bottom-2 right-2 bg-black text-white text-xs px-2 py-1 rounded z-10"></div> -->
+    <!-- <div id="cam-info" class="absolute bottom-2 left-2 bg-black text-white text-xs px-2 py-1 rounded z-10"></div> -->
   
-  <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
   </script>
   <script type="module" src="./main.js"></script>
+
+  <script>
+let map, marker, inited = false;
+
+function initMap() {
+  const bali = { lat: -8.846364, lng: 115.173017 };
+  map = new google.maps.Map(document.getElementById("gmap"), {
+    center: bali,
+    zoom: 9,
+    gestureHandling: "greedy",
+    mapTypeControl: true,
+    fullscreenControl: false,
+    streetViewControl: true,
+  });
+  marker = new google.maps.Marker({ position: bali, map, title: "Bali" });
+  inited = true;
+}
+
+// expose ke global agar callback bisa ketemu
+window.initMap = initMap;
+
+</script>
+
+<!-- MUAT GOOGLE MAPS DENGAN CALLBACK -->
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9GBnHqF_dKV_o4aLBVKBNhRCpLS-Nw80&language=en">
+</script>
 </body>
 </html>

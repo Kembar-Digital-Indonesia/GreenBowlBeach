@@ -1,276 +1,376 @@
+// main.js
+
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { OrbitControls } from 'https://esm.run/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-import { LumaSplatsThree, LumaSplatsSemantics } from './libs/luma-web.module.js';
+import { Line2 } from 'https://esm.run/three@0.160.0/examples/jsm/lines/Line2.js';
+import { LineMaterial } from 'https://esm.run/three@0.160.0/examples/jsm/lines/LineMaterial.js';
+import { LineGeometry } from 'https://esm.run/three@0.160.0/examples/jsm/lines/LineGeometry.js';
+import { LumaSplatsThree } from './libs/luma-web.module.js';
 import { initCarousel } from './carousel.js';
-import { createPins } from './pin.js';
 
 initCarousel();
 
-// Init scene
+// ===== Init scene =====
 const scene = new THREE.Scene();
+const overlayScene = new THREE.Scene();              // ★ scene terpisah untuk overlay (garis)
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5);
-camera.position.set(0.43, 1.23, -0.67);
+camera.position.set(1.57, 1.72, 0.21);
 
 const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: 'high-performance' });
+scene.background = new THREE.Color(0x000000);
 renderer.setSize(window.innerWidth, window.innerHeight);
-const DPR = Math.min(window.devicePixelRatio, 1.25)
-renderer.setPixelRatio(DPR)
+const DPR = Math.min(window.devicePixelRatio, 1.25);
+renderer.setPixelRatio(DPR);
+renderer.autoClear = true;                            // default
 document.body.appendChild(renderer.domElement);
 
-const canvas = renderer.domElement;
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-const { pins, pinPOIs } = createPins(scene);
+// ===== Outline tebal (Line2) di overlayScene =====
+const verticesClosed = new Float32Array([
+  1.2, -0.3, -1.4,
+  1.9, -0.7,  0.15,
+  1.6, -0.6,  0.22,
+  1,  -0.4, 1,
+  0,  0, 0.5,
+  -2.5, 0.8, 0.1,
+  -2.6, 0.8, -0.6,
+  -0.15, 0.2, -0.80,
+  1.2, -0.3, -1.4,
+]);
 
-// Controls
+const lineGeo = new LineGeometry();
+lineGeo.setPositions(Array.from(verticesClosed));
+
+const lineMat = new LineMaterial({
+  color: 0xffffff,
+  linewidth: 5,        // pixel
+  dashed: false,
+  depthTest: false,    // selalu di atas
+  depthWrite: false,
+  transparent: true
+});
+
+const fatLine = new Line2(lineGeo, lineMat);
+fatLine.computeLineDistances();
+fatLine.renderOrder = 9999;           // tinggi sekali
+fatLine.frustumCulled = false;        // ★ cegah hilang saat di sudut tertentu
+overlayScene.add(fatLine);            // ★ taruh di overlayScene
+
+// LineMaterial butuh resolusi canvas
+const size = new THREE.Vector2();
+renderer.getSize(size);
+lineMat.resolution.set(size.x, size.y);
+
+// ===== Controls =====
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-const maxY = 2.0;
-const minY = 0.5;
+const maxY = 3.5;
+const minY = -2;
 
 controls.addEventListener('change', () => {
-  // Clamp camera Y position
   camera.position.y = Math.min(maxY, Math.max(minY, camera.position.y));
+  needsRender = true;
 });
 
-controls.minDistance = 0.9; 
-controls.maxDistance = 1.8;  
+controls.minDistance = 0;
+controls.maxDistance = 3.5;
 
-// Luma Splats
+// ===== Luma Splats =====
 const splats = new LumaSplatsThree({
-    source: 'https://lumalabs.ai/capture/addba5ba-c816-42fc-af43-ec733b976b77',
-    particleRevealEnabled: false
+  source: 'https://lumalabs.ai/capture/1220b8e6-f56e-4bbc-92f8-b4728dec5fb9',
+  particleRevealEnabled: false
 });
+splats.position.set(2, 0.9, 0);
 scene.add(splats);
 
-// const axesHelper = new THREE.AxesHelper( 10 );
+// ===== Helpers =====
+// const axesHelper = new THREE.AxesHelper(10);
 // axesHelper.position.y = 0;
-// scene.add( axesHelper );
+// scene.add(axesHelper);
 
-// caminfo
+// ===== Cam info (opsional) =====
 // const camInfo = document.getElementById('cam-info');
 
-const areaButtons = [
-  {
-    button: document.querySelector('button:nth-child(1)'),
-    cameraPosition: [0.16, 0.68, -0.68],
-    cameraTarget: [-0.2, 0, 0.25],
-    descriptionId: 'pooldescription',
-  },
-  {
-    button: document.querySelector('button:nth-child(2)'),
-    cameraPosition: [-0.30, 0.92, -0.57],
-    cameraTarget: [0, 0, -0.30],
-    descriptionId: 'housedescription',
-  },
-  {
-    button: document.querySelector('button:nth-child(3)'),
-    cameraPosition: [-0.28, 0.74, -1.16],
-    cameraTarget: [-0.4, 0.1, -0.7],
-    descriptionId: 'gardendescription',
-  },
-  {
-    button: document.querySelector('button:nth-child(4)'),
-    cameraPosition: [-0.93, 0.78, 0.73],
-    cameraTarget: [-0.4, 0.2, 0.6],
-    descriptionId: 'arrivaldescription',
-  },
-  // {
-  //   button: document.querySelector('button:nth-child(5)'),
-  //   cameraPosition: [-0.74, 0.68, -0.41],
-  //   cameraTarget: [-0.15, 0, -0.35],
-  //   descriptionId: 'archdescription',
-  // },
-  // {
-  //   button: document.querySelector('button:nth-child(6)'),
-  //   cameraPosition: [0.52, 0.63, -1.03],
-  //   cameraTarget: [0.5, 0, -0.6],
-  //   descriptionId: 'backdescription',
-  // },
-];
+// ===== Render loop on-demand =====
+let needsRender = true;
+let warmingUp = true;
+const WARMUP_MS = 3000;
+const warmUpEndAt = performance.now() + WARMUP_MS;
 
-const buttons = document.querySelectorAll('.area-button');
-const closeButtons = document.querySelectorAll('.close-description');
+// === UI elements
+const btnMap = document.getElementById('btn-open-map');
+const mapOverlay = document.getElementById('map-overlay');
+const btnCloseMap = document.getElementById('btn-close-map');
 
-buttons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    buttons.forEach(b => b.dataset.active = "false");
-    btn.dataset.active = "true";
+// === Toggle garis (outline) ===
+const toggleBtn = document.getElementById('btn-toggle-line');
+const infoBox = document.getElementById('info-box');
+if (toggleBtn) {
+  const iconEye = toggleBtn.querySelector('[data-lucide="eye"]');
+  const iconEyeOff = toggleBtn.querySelector('[data-lucide="eye-off"]');
+
+  // Default: garis terlihat
+  if (iconEye) iconEye.style.display = 'inline-block';
+  if (iconEyeOff) iconEyeOff.style.display = 'none';
+
+  toggleBtn.addEventListener('click', () => {
+    fatLine.visible = !fatLine.visible;
+
+    // Sekalian toggle info box
+    if (infoBox) {
+      // kalau line kelihatan, info juga kelihatan
+      infoBox.style.display = fatLine.visible ? 'block' : 'none';
+      // Atau kalau pakai Tailwind lebih rapi:
+      // infoBox.classList.toggle('hidden', !fatLine.visible);
+    }
+
+    // Toggle icon
+    const isVisible = fatLine.visible;
+    if (iconEye) iconEye.style.display = isVisible ? 'inline-block' : 'none';
+    if (iconEyeOff) iconEyeOff.style.display = isVisible ? 'none' : 'inline-block';
+
+    needsRender = true;
   });
-});
+}
 
-closeButtons.forEach(closeBtn => {
-  closeBtn.addEventListener('click', () => {
-    buttons.forEach(b => b.dataset.active = "false");
+// === Helper: easing & anim kamera
+function easeInOut(t) {
+  return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
+}
+
+function animateCamera({ toPos, toTarget = null, toFov = null, duration = 1200 }) {
+  const fromPos = camera.position.clone();
+  const fromTarget = controls.target.clone();
+  const fromFov = camera.fov;
+
+  let start = performance.now();
+  return new Promise((resolve) => {
+    function step(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const k = easeInOut(t);
+
+      // posisi
+      camera.position.lerpVectors(fromPos, toPos, k);
+
+      // target orbit (opsional)
+      if (toTarget) {
+        controls.target.set(
+          fromTarget.x + (toTarget.x - fromTarget.x) * k,
+          fromTarget.y + (toTarget.y - fromTarget.y) * k,
+          fromTarget.z + (toTarget.z - fromTarget.z) * k
+        );
+      }
+
+      // FOV (opsional)
+      if (toFov !== null) {
+        camera.fov = fromFov + (toFov - fromFov) * k;
+        camera.updateProjectionMatrix();
+      }
+
+      // minta render ulang
+      needsRender = true;
+
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        resolve();
+      }
+    }
+    requestAnimationFrame(step);
   });
-});
+}
 
-areaButtons.forEach(({ button, cameraPosition, cameraTarget, descriptionId }) => {
-  button.addEventListener('click', () => {
-    moveCameraTo(cameraPosition, cameraTarget);
+// === Orkestrasi: zoom-out lalu tampilkan peta
+// Asumsi variabel global yang sudah ada:
+// camera, controls, renderer, mapOverlay, needsRender
+// serta Google Maps globals: map, marker, inited, initMap()
 
-    // Sembunyikan semua deskripsi, lalu tampilkan yang dipilih
-    document.querySelectorAll('.description-box').forEach(el => el.style.display = 'none');
-    const descEl = document.getElementById(descriptionId);
-    if (descEl) descEl.style.display = 'block';
+async function zoomOutAndShowMap() {
+  // 1) Simpan state kamera (untuk kembali nanti)
+  const saved = {
+    pos: camera.position.clone(),
+    target: controls.target.clone(),
+    fov: camera.fov
+  };
+
+  // 2) Animasi zoom-out
+  const toPos = new THREE.Vector3(0, 5, 0);
+  const toTarget = new THREE.Vector3(0, 0, 0);
+  const toFov = 75;
+
+  controls.enabled = false;
+  await animateCamera({ toPos, toTarget, toFov, duration: 1200 });
+  controls.enabled = false;
+
+  // 3) Fade canvas 3D (opsional)
+  renderer.domElement.style.transition = 'opacity 300ms ease';
+  renderer.domElement.style.opacity = '0.3';
+
+  // 4) *** Pastikan Google Maps siap ***
+  //    - Jika script sudah load dan belum init, panggil initMap()
+  //    - Jika script belum siap, tunggu sampai window.google tersedia
+  if (!inited) {
+    if (window.google && google.maps) {
+      if (typeof initMap === 'function') initMap();
+    } else {
+      // tunggu sampai gmaps masuk (maks 3 detik)
+      await new Promise((resolve) => {
+        let waited = 0;
+        const interval = setInterval(() => {
+          if (window.google && google.maps) {
+            clearInterval(interval);
+            if (!inited && typeof initMap === 'function') initMap();
+            resolve();
+          } else if ((waited += 50) >= 3000) {
+            clearInterval(interval);
+            resolve(); // lanjut saja; kalau gagal, console akan kasih error key
+          }
+        }, 50);
+      });
+    }
+  }
+
+  // 5) Tampilkan overlay peta
+  mapOverlay.style.display = 'block';
+
+  // 6) Paksa re-layout setelah visible (wajib jika sebelumnya display:none)
+  if (inited && map) {
+    const center = map.getCenter();
+    google.maps.event.trigger(map, 'resize');
+    map.setCenter(center);
+  }
+
+  // 7) Simpan state untuk kembali
+  window.__savedView = saved;
+  needsRender = true;
+}
+
+
+// === Orkestrasi: tutup peta & kembalikan kamera
+async function hideMapAndReturn() {
+  mapOverlay.style.display = 'none';
+  renderer.domElement.style.opacity = '1';
+
+  const saved = window.__savedView;
+  if (!saved) return;
+
+  controls.enabled = false;
+  await animateCamera({
+    toPos: saved.pos,
+    toTarget: saved.target,
+    toFov: saved.fov,
+    duration: 900
   });
-});
+  controls.enabled = true;
+  needsRender = true;
+}
 
+// === Event listeners tombol
+if (btnMap) {
+  btnMap.addEventListener('click', zoomOutAndShowMap);
+}
+if (btnCloseMap) {
+  btnCloseMap.addEventListener('click', hideMapAndReturn);
+}
 
-document.querySelectorAll('.close-description').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[id$="description"]').forEach(el => {
-      el.style.display = 'none';
-    });
-  });
-});
-
-let isCameraAnimating = false;
-
-let needsRender = true
-let warmingUp = true
-const WARMUP_MS = 3000
-const warmUpEndAt = performance.now() + WARMUP_MS
 
 function renderLoop() {
-  requestAnimationFrame(renderLoop)
+  requestAnimationFrame(renderLoop);
 
-  if (controls.update()) needsRender = true
+  if (controls.update()) needsRender = true;
   if (warmingUp) {
-    needsRender = true
-    if (performance.now() >= warmUpEndAt) warmingUp = false
+    needsRender = true;
+    if (performance.now() >= warmUpEndAt) warmingUp = false;
   }
-  if (!needsRender) return
-  renderer.render(scene, camera)
-  needsRender = false
+  if (!needsRender) return;
+
+//   if (camInfo) {
+//     camInfo.textContent = `x: ${camera.position.x.toFixed(2)}, 
+// y: ${camera.position.y.toFixed(2)}, 
+// z: ${camera.position.z.toFixed(2)}`;
+//   }
+
+  // Pass 1: render scene biasa (dengan depth)
+  renderer.autoClear = true;
+  renderer.render(scene, camera);
+
+  // Pass 2: render overlay (garis) SELALU di atas
+  renderer.autoClear = false;
+  renderer.clearDepth();
+  renderer.render(overlayScene, camera);
+
+  needsRender = false;
 }
-renderLoop()
+renderLoop();
 
-function moveCameraTo(position, lookAt = null, duration = 1000) {
-  needsRender = true
-  if (isCameraAnimating) return; // hindari tumpukan animasi
-  isCameraAnimating = true;
-  const start = camera.position.clone();
-  const end = new THREE.Vector3(...position);
-  const startTarget = controls.target.clone();
-  const endTarget = lookAt ? new THREE.Vector3(...lookAt) : startTarget;
+// Pastikan render setelah menambah objek
+needsRender = true;
 
-  const startTime = performance.now();
+// ===== Resize handler =====
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
 
-  function animateCamera(time) {
-    const elapsed = time - startTime;
-    const t = Math.min(elapsed / duration, 1);
-    camera.position.lerpVectors(start, end, t);
-    controls.target.lerpVectors(startTarget, endTarget, t);
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
-    if (t < 1) {
-      requestAnimationFrame(animateCamera);
-    } else {
-      isCameraAnimating = false;
-    }
-  }
+  // update resolusi untuk LineMaterial
+  lineMat.resolution.set(window.innerWidth, window.innerHeight);
 
-  requestAnimationFrame(animateCamera);
+  needsRender = true;
+});
+
+const btnContact = document.getElementById('btn-contact');
+const menuContact = document.getElementById('contact-menu');
+
+function openMenu() {
+  menuContact.classList.remove('invisible','opacity-0','translate-y-1','pointer-events-none');
+  btnContact.setAttribute('aria-expanded', 'true');
+  const icon = btnContact.querySelector('svg');
+  if (icon) icon.style.transform = 'rotate(180deg)';
 }
 
-// Event klik
-canvas.addEventListener('click', (event) => {
-  const rect = canvas.getBoundingClientRect();
-  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+function closeMenu() {
+  menuContact.classList.add('invisible','opacity-0','translate-y-1','pointer-events-none');
+  btnContact.setAttribute('aria-expanded', 'false');
+  const icon = btnContact.querySelector('svg');
+  if (icon) icon.style.transform = '';
+}
 
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(
-    pins.map(p => p.children[0]).filter(c => c instanceof THREE.Sprite)
-  );
+btnContact.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isOpen = btnContact.getAttribute('aria-expanded') === 'true';
+  isOpen ? closeMenu() : openMenu();
+});
 
-  if (intersects.length > 0) {
-    const clickedSprite = intersects[0].object;
-    const pinGroup = clickedSprite.parent;
+// Tutup saat klik di luar
+document.addEventListener('click', (e) => {
+  if (!menuContact.contains(e.target) && !btnContact.contains(e.target)) closeMenu();
+});
 
-    const pinPOI = pinPOIs.find(p => p.mesh === pinGroup);
-    if (pinPOI) {
-      // Pindahkan kamera
-      moveCameraTo(pinPOI.camera_position.toArray(), pinPOI.camera_target.toArray());
-      needsRender = true
+// Tutup dengan ESC dan dukung panah atas/bawah
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeMenu();
+});
 
-      // Tampilkan deskripsi
-      document.querySelectorAll('.description-box').forEach(d => d.style.display = 'none');
-      const desc = document.getElementById(pinPOI.descriptionId);
-      if (desc) desc.style.display = 'block';
+const items = Array.from(menuContact.querySelectorAll('[role="menuitem"]'));
 
-      document.querySelectorAll('.area-button').forEach(b => b.dataset.active = "false")
-      const index = pinPOIs.indexOf(pinPOI)
-      const targetBtn = document.querySelectorAll('.area-button')[index]
-      if (targetBtn) targetBtn.dataset.active = "true"
-
-      // Highlight sementara
-      clickedSprite.material.color.set(0xffff00);
-      setTimeout(() => clickedSprite.material.color.set(0xffffff), 300);
-    }
+btnContact.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    openMenu();
+    items[0]?.focus();
   }
 });
 
-const pickables = pins
-.map(p => p.children[0])
-.filter(c => c instanceof THREE.Sprite)
-
-const pointer = new THREE.Vector2()
-let hoveredSprite = null
-let rafId = null
-let pendingPick = false
-let lastX = 0, lastY = 0
-
-raycaster.near = 0.1
-raycaster.far = 5.0
-
-const PIN_LAYER = 2
-pickables.forEach(o => o.layers.set(PIN_LAYER))
-camera.layers.enable(PIN_LAYER)
-
-canvas.addEventListener('pointermove', (event) => {
-  if (controls.dragging || isCameraAnimating) return
-  if (Math.abs(event.clientX - lastX) < 2 && Math.abs(event.clientY - lastY) < 2) return
-  lastX = event.clientX; lastY = event.clientY
-
-  const rect = canvas.getBoundingClientRect()
-  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-  if (pendingPick) return
-  pendingPick = true
-
-  rafId = requestAnimationFrame(() => {
-    pendingPick = false
-    raycaster.setFromCamera(pointer, camera)
-    const intersects = raycaster.intersectObjects(pickables, false)
-
-    if (intersects.length > 0) {
-      const sprite = intersects[0].object
-      if (hoveredSprite !== sprite) {
-        if (hoveredSprite) hoveredSprite.material.color.setHex(0xffffff)
-        sprite.material.color.setHex(0x757641)
-        needsRender = true
-        hoveredSprite = sprite
-      }
-      canvas.style.cursor = 'pointer'
-    } else {
-      if (hoveredSprite) hoveredSprite.material.color.setHex(0xffffff)
-      hoveredSprite = null
-      canvas.style.cursor = 'default'
-    }
-  })
-}, { passive: true})
-
-window.addEventListener('blur', () => { if (rafId) cancelAnimationFrame(rafId); });
-
-  let isZooming = false;
-let isOrbiting = false;
-
-// Resize handler
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+menuContact.addEventListener('keydown', (e) => {
+  const i = items.indexOf(document.activeElement);
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    items[(i + 1) % items.length]?.focus();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    items[(i - 1 + items.length) % items.length]?.focus();
+  } else if (e.key === 'Tab') {
+    closeMenu();
+  }
 });
